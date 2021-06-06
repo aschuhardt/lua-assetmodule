@@ -1,5 +1,11 @@
 #!/bin/sh
 
+function strip_binary {
+  strip -v -S --strip-unneeded --remove-section=.note.gnu.gold-version \
+    --remove-section=.comment --remove-section=.note \
+    --remove-section=.note.gnu.build-id --remove-section=.note.ABI-tag $(find -name "*$1.*")
+}
+
 if [ -n "$1" ]; then
   module=$1
   asset=$2
@@ -47,8 +53,17 @@ if [ -n "$1" ]; then
   # copy the newly-built library file to base directory
 
   popd
-  mkdir -p $3
+  mkdir -p $output
   cp $builddir/*$module.* $output
+  cp $builddir/*miniz.* $output
+
+
+  # --------------------------------
+  # strip the binary down a bit
+  pushd $output
+  strip_binary $module
+  strip_binary $miniz
+  popd
 
 
   # --------------------------------
@@ -62,7 +77,7 @@ if [ -n "$1" ]; then
   # test the resulting library module
 
   pushd $output
-  result_size=$(echo "print(require '$1'.length)" | lua)
+  result_size=$(echo "print(require '$module'.length)" | lua)
   initial_size=$(stat -c %s ../$asset)
   echo "Initial (uncompressed) file size: $initial_size"
   echo "Size reported by the module (post-decompression): $result_size"

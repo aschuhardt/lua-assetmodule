@@ -7,7 +7,6 @@
 #include <miniz.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "asset-data.h"
 
@@ -37,8 +36,22 @@ int cleanup_buffer(lua_State* L) {
   return 0;
 }
 
+int push_buffer_as_string(lua_State* L) {
+  lua_getfield(L, 1, FIELD_BUFFER);
+  unsigned char* buffer = (unsigned char*)lua_touserdata(L, -1);
+
+  lua_getfield(L, 1, FIELD_LENGTH);
+  size_t length = (size_t)luaL_checkinteger(L, -1);
+
+  lua_pushlstring(L, (const char*)buffer, length);
+
+  return 1;
+}
+
 void create_metatable(lua_State* L) {
-  luaL_Reg methods[] = {{"__gc", cleanup_buffer}, {NULL, NULL}};
+  luaL_Reg methods[] = {{"__gc", cleanup_buffer},
+                        {"__string", push_buffer_as_string},
+                        {NULL, NULL}};
   luaL_newlib(L, methods);
   lua_setfield(L, LUA_REGISTRYINDEX, METATABLE_NAME(MODULE_NAME));
 }

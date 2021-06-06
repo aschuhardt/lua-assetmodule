@@ -14,7 +14,8 @@ int main(int argc, const char** argv) {
 
   size_t compressed_len = compressBound(file_len);
   unsigned char* compressed = malloc(compressed_len * sizeof(unsigned char));
-  if (compress(compressed, &compressed_len, uncompressed, file_len) != Z_OK) {
+  if (compress2(compressed, &compressed_len, uncompressed, file_len,
+                MZ_UBER_COMPRESSION) != Z_OK) {
     printf("Failed to compress %s", argv[1]);
     return -1;
   }
