@@ -10,14 +10,14 @@
 
 // this nonsense took way too long to figure out
 //
-#define MAKE_SIGNATURE(prefix, name) prefix##name(lua_State* L)
-#define MODULE_SIGNATURE(name) MAKE_SIGNATURE(luaopen_, name)
+#define _signature(prefix, name) prefix##name(lua_State* L)
+#define signature(name) _signature(luaopen_, name)
 
-#define MAKE_METATABLE_NAME(prefix, name, suffix) prefix #name suffix
-#define METATABLE_NAME(name) MAKE_METATABLE_NAME("assetmodule_", name, "_meta")
+#define _table_name(prefix, name, suffix) prefix #name suffix
+#define table_name(name) _table_name("assetmodule_", name, "_meta")
 
-#define MAKE_STRINGIFY(value) #value
-#define STRINGIFY(value) MAKE_STRINGIFY(value)
+#define _stringify(value) #value
+#define stringify(value) _stringify(value)
 
 // clang-format off
 
@@ -61,12 +61,12 @@ void create_metatable(lua_State* L) {
                         {"__string", push_buffer_as_string},
                         {NULL, NULL}};
   luaL_newlib(L, methods);
-  lua_setfield(L, LUA_REGISTRYINDEX, METATABLE_NAME(MODULE_NAME));
+  lua_setfield(L, LUA_REGISTRYINDEX, table_name(MODULE_NAME));
 }
 
 void delete_metatable(lua_State* L) {
   lua_pushnil(L);
-  lua_setfield(L, LUA_REGISTRYINDEX, METATABLE_NAME(MODULE_NAME));
+  lua_setfield(L, LUA_REGISTRYINDEX, table_name(MODULE_NAME));
 }
 
 // clang-format off
@@ -74,7 +74,7 @@ void delete_metatable(lua_State* L) {
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int MODULE_SIGNATURE(MODULE_NAME) {
+int signature(MODULE_NAME) {
 
   // clang-format on
 
@@ -82,13 +82,13 @@ int MODULE_SIGNATURE(MODULE_NAME) {
 
   lua_newtable(L);
 
-  luaL_setmetatable(L, METATABLE_NAME(MODULE_NAME));
+  luaL_setmetatable(L, table_name(MODULE_NAME));
 
   unsigned char* buffer = malloc(asset_size * sizeof(unsigned char));
   if (buffer == NULL) {
     luaL_error(L,
                "Failed to allocate %lu bytes for asset stored in module \"%s\"",
-               asset_size, STRINGIFY(MODULE_NAME));
+               asset_size, stringify(MODULE_NAME));
     return 0;
   }
 
@@ -97,7 +97,7 @@ int MODULE_SIGNATURE(MODULE_NAME) {
                           sizeof(asset_data));
   if (status != Z_OK) {
     luaL_error(L, "Failed to decompress asset stored in module \"%s\"",
-               STRINGIFY(MODULE_NAME));
+               stringify(MODULE_NAME));
     delete_metatable(L);
     free(buffer);
     return 0;
