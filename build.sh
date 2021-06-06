@@ -76,13 +76,13 @@ if [ -n "$1" ]; then
   # --------------------------------
   # test the resulting library module
 
-  pushd $output
-  result_size=$(echo "print(require '$module'.length)" | lua)
-  initial_size=$(stat -c %s ../$asset)
-  echo "Initial (uncompressed) file size: $initial_size"
-  echo "Size reported by the module (post-decompression): $result_size"
+  # pushd $output
+  # result_size=$(echo "print(require '$module'.length)" | lua)
+  # initial_size=$(stat -c %s ../$asset)
+  # echo "Initial (uncompressed) file size: $initial_size"
+  # echo "Size reported by the module (post-decompression): $result_size"
 
-  popd
+  # popd
 else
   echo "Usage: build.sh <module-name> <asset-file-path> <out-dir>"
   return
