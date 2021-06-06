@@ -60,10 +60,10 @@ if [ -n "$1" ]; then
 
   # --------------------------------
   # strip the binary down a bit
-  pushd $output
-  strip_binary $module
-  strip_binary $miniz
-  popd
+  # pushd $output
+  # strip_binary $module
+  # strip_binary $miniz
+  # popd
 
 
   # --------------------------------
