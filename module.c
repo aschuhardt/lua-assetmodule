@@ -31,6 +31,7 @@
 
 #define FIELD_LENGTH "length"
 #define FIELD_BUFFER "buffer"
+#define FUNC_DUMP "dump"
 
 int cleanup_buffer(lua_State* L) {
   lua_getfield(L, 1, FIELD_BUFFER);
@@ -44,7 +45,7 @@ int cleanup_buffer(lua_State* L) {
   return 0;
 }
 
-int push_buffer_as_string(lua_State* L) {
+int dump_into_buffer(lua_State* L) {
   lua_getfield(L, 1, FIELD_BUFFER);
   unsigned char* buffer = (unsigned char*)lua_touserdata(L, -1);
 
@@ -57,10 +58,10 @@ int push_buffer_as_string(lua_State* L) {
 }
 
 void create_metatable(lua_State* L) {
-  luaL_Reg methods[] = {{"__gc", cleanup_buffer},
-                        {"__string", push_buffer_as_string},
-                        {NULL, NULL}};
+  luaL_Reg methods[] = {{"__gc", cleanup_buffer}, {NULL, NULL}};
   luaL_newlib(L, methods);
+  lua_pushliteral(L, stringify(MODULE_NAME));
+  lua_setfield(L, -2, "__name");
   lua_setfield(L, LUA_REGISTRYINDEX, table_name(MODULE_NAME));
 }
 
@@ -108,6 +109,9 @@ int signature(MODULE_NAME) {
 
   lua_pushinteger(L, decompressed_size);
   lua_setfield(L, -2, FIELD_LENGTH);
+
+  lua_pushcfunction(L, dump_into_buffer);
+  lua_setfield(L, -2, FUNC_DUMP);
 
   return 1;
 }
