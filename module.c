@@ -97,8 +97,9 @@ int signature(MODULE_NAME) {
   int status = uncompress(buffer, &decompressed_size, &asset_data[0],
                           sizeof(asset_data));
   if (status != Z_OK) {
-    luaL_error(L, "Failed to decompress asset stored in module \"%s\"",
-               stringify(MODULE_NAME));
+    luaL_error(
+        L, "Failed to decompress asset stored in module \"%s\" (status: %d)",
+        stringify(MODULE_NAME), status);
     delete_metatable(L);
     free(buffer);
     return 0;
