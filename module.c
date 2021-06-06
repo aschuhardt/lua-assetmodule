@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "asset-data.h"
-
 // this nonsense took way too long to figure out
 //
 #define MAKE_SIGNATURE(prefix, name) prefix##name(lua_State* L)
@@ -20,6 +18,16 @@
 
 #define MAKE_STRINGIFY(value) #value
 #define STRINGIFY(value) MAKE_STRINGIFY(value)
+
+// clang-format off
+
+#define __module_header(contents) #contents
+#define _module_header(name) __module_header(name-asset-data.h)
+#define module_header(name) _module_header(name)
+
+// clang-format on
+
+#include module_header(MODULE_NAME)
 
 #define FIELD_LENGTH "length"
 #define FIELD_BUFFER "buffer"

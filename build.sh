@@ -32,7 +32,7 @@ if [ -n "$1" ]; then
   # create a header file with the contents of the asset file dumped into a byte array
 
   popd
-  header="asset-data.h"
+  header="$module-asset-data.h"
   echo "#ifndef ASSET_DATA_H" > $header
   echo "#define ASSET_DATA_H" >> $header
   echo "const unsigned long asset_size = $(stat -c %s $asset);" >> $header
