@@ -25,7 +25,7 @@ int main(int argc, const char** argv) {
   } else {
     size_t written = 0;
     do {
-      fwrite(compressed, sizeof(unsigned char), WRITE_SIZE, stdout);
+      written = fwrite(compressed, sizeof(unsigned char), WRITE_SIZE, stdout);
     } while (written == WRITE_SIZE);
   }
 
