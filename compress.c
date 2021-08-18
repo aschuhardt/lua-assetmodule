@@ -1,7 +1,7 @@
 #include <miniz.h>
 #include <stdio.h>
 
-#define WRITE_SIZE 1024
+#define WRITE_SIZE 4096
 
 int main(int argc, const char** argv) {
   FILE* file = fopen(argv[1], "rb");
@@ -20,14 +20,12 @@ int main(int argc, const char** argv) {
     return -1;
   }
 
-  if (compressed_len < WRITE_SIZE) {
-    fwrite(compressed, sizeof(unsigned char), compressed_len, stdout);
-  } else {
-    size_t written = 0;
-    do {
-      written = fwrite(compressed, sizeof(unsigned char), WRITE_SIZE, stdout);
-    } while (written == WRITE_SIZE);
-  }
+  size_t remaining = compressed_len;
+  do {
+    size_t n = remaining < WRITE_SIZE ? remaining : WRITE_SIZE;
+    remaining -= fwrite(&compressed[compressed_len - remaining],
+                        sizeof(unsigned char), n, stdout);
+  } while (remaining > 0);
 
   free(uncompressed);
   free(compressed);
